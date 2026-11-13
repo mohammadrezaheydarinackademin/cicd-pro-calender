@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}Weekly calendar · Weekview{% endblock %}
+
+{% block content %}
+<section class="calendar-shell">
+  <div class="calendar-toolbar">
+    <div>
+      <h1>Weekly calendar</h1>
+      <p class="week-label">{{ data.weekLabel }}</p>
+      <p class="calendar-hint">Click any day to add an event. Past days and events stay editable.</p>
+    </div>
+    <div class="calendar-actions">
+      <a class="btn btn-ghost" href="{{ url_for('main.calendar', start=data.prevWeek) }}" aria-label="Previous week">&larr; Prev</a>
+      <a class="btn btn-ghost" href="{{ url_for('main.calendar', start=data.currentWeek) }}">Today</a>
+      <a class="btn btn-ghost" href="{{ url_for('main.calendar', start=data.nextWeek) }}" aria-label="Next week">Next &rarr;</a>
+    </div>
+  </div>
+
+  <div class="week-scroll">
+    <div class="week-grid" id="week-grid">
+      {% for day in data.days %}
+        <div class="day-column{% if day.isToday %} is-today{% endif %}{% if day.isPast %} is-past{% endif %}" data-date="{{ day.date }}">
+          <button class="day-header" type="button" aria-label="Create an event on {{ day.weekday }} {{ day.date }}">
+            <span class="day-name">{{ day.weekday }}</span>
+            <span class="day-number">{{ day.day }}</span>
+            <span class="day-month">{{ day.month }}</span>
+          </button>
+          <div class="day-events" data-date="{{ day.date }}"></div>
+          <button class="day-add" type="button">+ Add event</button>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<div class="modal-backdrop" id="event-modal" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-header">
+      <h2 id="modal-title">New event</h2>
+      <button class="icon-btn" type="button" data-close-modal aria-label="Close dialog">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="event-view" id="event-view" hidden>
+        <h3 id="view-title"></h3>
+        <p class="event-when" id="view-when"></p>
+        <p class="event-description" id="view-description"></p>
+        <p class="form-error" id="view-error" role="alert" hidden></p>
+        <div class="modal-actions">
+          <button class="btn btn-danger" type="button" id="view-delete">Delete</button>
+          <button class="btn btn-ghost" type="button" data-close-modal>Close</button>
+          <button class="btn btn-primary" type="button" id="view-edit">Edit</button>
+        </div>
+      </div>
+
+      <form id="event-form" novalidate>
+        <div class="field">
+          <label for="title">Title</label>
+          <input id="title" name="title" type="text" maxlength="200" required autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="description">Description <span class="muted">(optional)</span></label>
+          <textarea id="description" name="description" rows="3" maxlength="2000"></textarea>
+        </div>
+        <div class="form-grid">
+          <div class="field">
+            <label for="start_date">Start date</label>
+            <input id="start_date" name="start_date" type="date" required>
+          </div>
+          <div class="field">
+            <label for="start_time">Start time</label>
+            <input id="start_time" name="start_time" type="time" required>
+          </div>
+          <div class="field">
+            <label for="end_date">End date</label>
+            <input id="end_date" name="end_date" type="date" required>
+          </div>
+          <div class="field">
+            <label for="end_time">End time</label>
+            <input id="end_time" name="end_time" type="time" required>
+          </div>
+        </div>
+        <p class="form-error" id="form-error" role="alert" hidden></p>
+        <div class="modal-actions">
+          <button class="btn btn-danger" type="button" id="form-delete" hidden>Delete</button>
+          <button class="btn btn-ghost" type="button" data-close-modal>Cancel</button>
+          <button class="btn btn-primary" type="submit" id="form-save">Save event</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script id="calendar-data" type="application/json">{{ data|tojson }}</script>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/calendar.js') }}"></script>
+{% endblock %}

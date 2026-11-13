@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Create account · Weekview{% endblock %}
+
+{% block content %}
+<div class="auth-wrap">
+  <section class="auth-card">
+    <div class="auth-heading">
+      <h1>Create your account</h1>
+      <p class="muted">A simple weekly calendar for your own events.</p>
+    </div>
+    <form method="post" action="{{ url_for('auth.register') }}" class="auth-form" novalidate>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" value="{{ email }}" autocomplete="email" required>
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" minlength="8" autocomplete="new-password" required>
+        <span class="field-hint">Use at least 8 characters.</span>
+      </div>
+      <div class="field">
+        <label for="confirm_password">Confirm password</label>
+        <input id="confirm_password" name="confirm_password" type="password" minlength="8" autocomplete="new-password" required>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Create account</button>
+    </form>
+    <p class="auth-switch muted">Already have an account? <a href="{{ url_for('auth.login') }}">Log in</a></p>
+  </section>
+</div>
+{% endblock %}
